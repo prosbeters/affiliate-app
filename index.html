@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Ide Konten Afiliasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .file-drop-zone {
+            transition: background-color 0.2s ease-in-out;
+        }
+        .file-drop-zone.dragover {
+            background-color: #1f2937;
+        }
+        .loader, .image-loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 10px;
+            border: 2px solid #1f2937;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background-color: #6b7280;
+        }
+        /* Hide elements by default */
+        #app-container, #auth-loader {
+            display: none;
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background-color: #4a5568;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- Authentication Loader -->
+    <div id="auth-loader" class="flex justify-center items-center h-screen">
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
+    </div>
+    
+    <!-- Login UI -->
+    <div id="login-container" class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+        <div class="max-w-md w-full space-y-8 bg-gray-800 p-10 rounded-2xl shadow-2xl">
+            <div class="text-center">
+                 <div class="mx-auto h-16 w-auto text-indigo-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.121 0 1.131.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5c-1.036 0-1.875.84-1.875 1.875v.375c0 1.036.84 1.875 1.875 1.875h7.5c1.035 0 1.875-.84 1.875-1.875v-.375c0-1.036-.84-1.875-1.875-1.875M8.25 15V18a2.25 2.25 0 002.25 2.25h3.518c.395 0 .77-.16.995-.43l2.25-2.625a2.25 2.25 0 000-2.898l-2.25-2.625a1.125 1.125 0 00-.995-.43H10.5A2.25 2.25 0 008.25 15z" />
+                    </svg>
+                 </div>
+                 <h1 class="text-3xl mt-4 font-bold text-indigo-400">Affiliate Content AI</h1>
+            </div>
+            <div>
+                <h2 class="mt-6 text-center text-2xl font-bold text-white">
+                    Masuk ke Akun Anda
+                </h2>
+                 <p class="mt-2 text-center text-sm text-gray-400">
+                    Gunakan email & password yang telah didaftarkan.
+                </p>
+            </div>
+            <form id="login-form" class="mt-8 space-y-6">
+                <div>
+                    <label for="login-email" class="sr-only">Alamat email</label>
+                    <input id="login-email" name="email" type="email" autocomplete="email" required class="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-900 text-gray-200 placeholder-gray-500 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Alamat email">
+                </div>
+                <div>
+                    <label for="login-password" class="sr-only">Password</label>
+                    <input id="login-password" name="password" type="password" autocomplete="current-password" required class="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-900 text-gray-200 placeholder-gray-500 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Password">
+                </div>
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-800">
+                        Masuk
+                    </button>
+                </div>
+            </form>
+            <p id="login-error" class="mt-2 text-center text-sm text-red-400"></p>
+            <p class="mt-8 text-center text-xs text-gray-400">
+                made by ProsBe
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App Container (hidden by default) -->
+    <div id="app-container">
+        <header class="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20">
+            <div class="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+                <div class="text-white font-bold text-lg">Generator Konten</div>
+                <div class="flex items-center space-x-4">
+                    <button id="help-button" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                        </svg>
+                        Bantuan
+                    </button>
+                    <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+            <main class="bg-gray-800 shadow-2xl rounded-2xl p-6 md:p-10 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <!-- Input Section -->
+                    <div>
+                         <!-- Image Upload Section -->
+                        <div class="flex flex-col items-center justify-center w-full">
+                            <label for="file-upload" id="file-drop-zone" class="file-drop-zone flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-600 rounded-lg cursor-pointer bg-gray-700 hover:bg-gray-600 transition-colors">
+                                <div id="upload-prompt" class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-10 h-10 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-400"><span class="font-semibold">Klik untuk mengunggah</span></p>
+                                    <p class="text-xs text-gray-500">PNG, JPG, atau WEBP (MAX. 5MB)</p>
+                                </div>
+                                 <img id="image-preview" src="#" alt="Pratinjau Gambar" class="hidden h-full w-full object-contain rounded-lg"/>
+                                <input id="file-upload" type="file" class="hidden" accept="image/png, image/jpeg, image/webp" />
+                            </label>
+                        </div>
+                        <!-- Product Description Section -->
+                        <div class="mt-6 w-full">
+                            <label for="product-description" class="block mb-2 text-sm font-medium text-gray-300">Deskripsi Tambahan (Opsional)</label>
+                            <textarea id="product-description" rows="4" class="block p-2.5 w-full text-sm text-gray-200 bg-gray-700 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" placeholder="Jelaskan keunggulan utama, target audiens, atau poin penting lainnya dari produk Anda di sini..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Action Section -->
+                    <div class="flex flex-col justify-center h-full">
+                         <!-- CTA Option Section -->
+                        <div class="mb-6 w-full">
+                            <label for="cta-option" class="block mb-2 text-sm font-medium text-gray-300">Pilih Gaya CTA</label>
+                            <select id="cta-option" class="block w-full p-2.5 text-sm text-gray-200 bg-gray-700 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="kuning" selected>Cek Keranjang Kuning (TikTok/Shopee)</option>
+                                <option value="bio">Cek Link di Bio (Instagram/etc)</option>
+                            </select>
+                        </div>
+                        
+                        <h2 class="text-xl font-semibold text-white mb-2">Buat Ide Konten</h2>
+                        <p class="text-gray-400 mb-6">Setelah gambar diunggah, klik tombol di bawah untuk memulai proses pembuatan ide script yang fokus dan terarah.</p>
+                        <button id="generate-button" disabled class="w-full flex items-center justify-center bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 disabled:transform-none">
+                            <svg id="button-icon" class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.455-2.456L12.75 18l1.178-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.178a3.375 3.375 0 002.456 2.456L20.25 18l-1.178.398a3.375 3.375 0 00-2.456 2.456z"/>
+                            </svg>
+                            <span id="button-text">Buatkan Script</span>
+                            <div id="loader" class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6 hidden ml-2"></div>
+                        </button>
+                        <p id="error-message" class="text-red-400 text-sm mt-4 text-center"></p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Results Section -->
+            <section id="results-section" class="mt-12 hidden">
+                 <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Hasil Ide Konten</h2>
+                    <div>
+                        <button id="copy-button" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                            </svg>
+                            Salin Hasil
+                        </button>
+                        <span id="copy-notification" class="text-green-400 text-sm ml-3 transition-opacity duration-300 opacity-0">Hasil disalin!</span>
+                    </div>
+                 </div>
+                 
+                 <!-- Voice Over Script Section -->
+                 <div id="script-section" class="mb-8 p-6 bg-gray-800/50 rounded-xl">
+                    <h3 class="text-lg font-semibold text-white mb-4">Naskah Voice Over</h3>
+                    <div id="script-content" class="space-y-4 text-gray-300"></div>
+                 </div>
+
+                 <!-- Visual Production Table -->
+                 <div class="bg-gray-800 shadow-xl rounded-xl p-2 sm:p-4 table-container overflow-x-auto">
+                    <h3 class="text-lg font-semibold text-white mb-4 px-2">Panduan Visual & Produksi</h3>
+                    <table class="w-full text-sm text-left text-gray-300 border-collapse">
+                        <thead class="text-xs text-gray-200 uppercase bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 w-12">No.</th>
+                                <th scope="col" class="px-4 py-3 min-w-[250px]">Karakter & Setting</th>
+                                <th scope="col" class="px-4 py-3 w-32">Struktur</th>
+                                <th scope="col" class="px-4 py-3 min-w-[250px]">Prompt Visual (Arahan Gaya)</th>
+                                <th scope="col" class="px-4 py-3 min-w-[250px]">Prompt Gerak (Untuk AI Video)</th>
+                                <th scope="col" class="px-4 py-3 min-w-[250px]">Backsound (Opsional)</th>
+                                <th scope="col" class="px-4 py-3 min-w-[250px]">Hashtag FYP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body" class="divide-y divide-gray-700/50">
+                            <!-- Content will be injected here -->
+                        </tbody>
+                    </table>
+                 </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-white">Panduan Penggunaan</h3>
+                <button id="close-help-button" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto modal-content text-gray-300">
+                <div>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 1: Login</h4>
+                    <p>Gunakan email dan password yang telah didaftarkan oleh admin untuk masuk ke aplikasi. Anda hanya perlu login sekali, selanjutnya aplikasi akan mengingat sesi Anda.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 2: Input Ide Anda</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Unggah Gambar Produk:</strong> Ini adalah langkah paling penting. Klik pada kotak dan pilih satu gambar produk terbaik Anda. AI akan "melihat" gambar ini untuk memahami produknya.</li>
+                        <li><strong>Deskripsi Tambahan (Opsional):</strong> Tulis beberapa kata kunci atau keunggulan produk yang tidak terlihat di gambar. Contoh: "untuk kulit sensitif", "tahan air", atau "target audiens: pria usia 20-30 tahun".</li>
+                        <li><strong>Pilih Gaya CTA:</strong> Tentukan ajakan bertindak yang Anda inginkan, apakah "Keranjang Kuning" untuk TikTok/Shopee, atau "Link di Bio" untuk Instagram.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 3: Buat Script!</h4>
+                    <p>Setelah gambar terunggah, klik tombol **"Buatkan Script"**. AI akan mulai bekerja merancang beberapa ide konten lengkap untuk Anda.</p>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 4: Memahami Hasil</h4>
+                    <p>Hasilnya akan dibagi menjadi dua bagian utama:</p>
+                    <div class="mt-2 pl-4 border-l-2 border-gray-600 space-y-3">
+                        <p><strong>1. Naskah Voice Over:</strong> Bagian ini berisi teks bersih yang siap Anda bacakan atau gunakan di aplikasi text-to-speech. Isinya hanya dialog, tanpa arahan visual.</p>
+                        <p><strong>2. Panduan Visual & Produksi:</strong> Ini adalah tabel contekan untuk sutradara. Isinya:</p>
+                        <ul class="list-decimal list-inside space-y-1 text-sm">
+                            <li><strong>Karakter & Setting:</strong> Deskripsi detail model (aktor) dan lokasi syuting.</li>
+                            <li><strong>Struktur:</strong> Menandai adegan Hook, Isi, atau CTA.</li>
+                            <li><strong>Prompt Visual:</strong> Arahan aksi dan gaya untuk setiap adegan. Ini adalah perintah untuk AI Image Generator.</li>
+                            <li><strong>Prompt Gerak:</strong> Arahan gerakan kamera untuk AI Video Generator.</li>
+                            <li><strong>Backsound & Hashtag:</strong> Rekomendasi musik dan hashtag yang siap pakai.</li>
+                        </ul>
+                    </div>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 5: Eksekusi</h4>
+                     <p>Gunakan tombol **"Salin Hasil"** untuk menyalin semua informasi ke clipboard. Tempel (paste) di catatan atau dokumen Anda. Gunakan prompt yang ada di tabel untuk membuat aset visual Anda di platform AI favorit (seperti Midjourney, Leonardo, dll).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBD9yCV0zcVrrm9xI1ekp8zoKDWVOSmUY",
+            authDomain: "affiliasi-2ee1c.firebaseapp.com",
+            projectId: "affiliasi-2ee1c",
+            storageBucket: "affiliasi-2ee1c.appspot.com",
+            messagingSenderId: "1062325052388",
+            appId: "1:1062325052388:web:91cc17128ec974c9701df1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // --- DOM Element References ---
+        const authLoader = document.getElementById('auth-loader');
+        const loginContainer = document.getElementById('login-container');
+        const loginForm = document.getElementById('login-form');
+        const loginErrorMsg = document.getElementById('login-error');
+        const appContainer = document.getElementById('app-container');
+        const logoutButton = document.getElementById('logout-button');
+        const helpButton = document.getElementById('help-button');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelpButton = document.getElementById('close-help-button');
+        const fileUpload = document.getElementById('file-upload');
+        const fileDropZone = document.getElementById('file-drop-zone');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const imagePreview = document.getElementById('image-preview');
+        const productDescription = document.getElementById('product-description');
+        const ctaOption = document.getElementById('cta-option');
+        const generateButton = document.getElementById('generate-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonIcon = document.getElementById('button-icon');
+        const loader = document.getElementById('loader');
+        const resultsSection = document.getElementById('results-section');
+        const scriptContent = document.getElementById('script-content');
+        const resultsTableBody = document.getElementById('results-table-body');
+        const errorMessage = document.getElementById('error-message');
+        const copyButton = document.getElementById('copy-button');
+        const copyNotification = document.getElementById('copy-notification');
+
+        let lastGeneratedIdeas = []; 
+        let base64ImageData = null;
+
+        // --- Authentication Logic ---
+        onAuthStateChanged(auth, user => {
+            authLoader.style.display = 'none';
+            if (user) {
+                loginContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+            } else {
+                loginContainer.style.display = 'flex';
+                appContainer.style.display = 'none';
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginForm['login-email'].value;
+            const password = loginForm['login-password'].value;
+            loginErrorMsg.textContent = '';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    loginForm.reset();
+                })
+                .catch((error) => {
+                    loginErrorMsg.textContent = 'Email atau password salah.';
+                });
+        });
+
+        logoutButton.addEventListener('click', () => {
+            signOut(auth);
+        });
+        
+        // --- Help Modal Logic ---
+        helpButton.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            helpModal.classList.add('flex');
+        });
+
+        closeHelpButton.addEventListener('click', () => {
+            helpModal.classList.add('hidden');
+            helpModal.classList.remove('flex');
+        });
+
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.add('hidden');
+                helpModal.classList.remove('flex');
+            }
+        });
+
+
+        // --- Main App Logic (Generator) ---
+        fileUpload.addEventListener('change', handleFileSelect);
+        fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); fileDropZone.classList.add('dragover'); });
+        fileDropZone.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); fileDropZone.classList.remove('dragover'); });
+        fileDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            fileDropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileUpload.files = files;
+                handleFileSelect({ target: fileUpload });
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showError("Ukuran file terlalu besar. Maksimal 5MB.");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    uploadPrompt.classList.add('hidden');
+                    generateButton.disabled = false;
+                    base64ImageData = e.target.result.split(',')[1];
+                    clearError();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        generateButton.addEventListener('click', generateContentIdeas);
+
+        async function generateContentIdeas() {
+            if (!base64ImageData) {
+                showError("Silakan unggah gambar produk terlebih dahulu.");
+                return;
+            }
+
+            setLoading(true);
+            clearError();
+            resultsSection.classList.add('hidden');
+            resultsTableBody.innerHTML = '';
+            scriptContent.innerHTML = '';
+            
+            const userDescription = productDescription.value.trim();
+            const descriptionContext = userDescription 
+                ? `Gunakan deskripsi tambahan berikut sebagai konteks:\n\n---\nDESKRIPSI TAMBAHAN:\n${userDescription}\n---`
+                : 'Fokus pada visual dari gambar yang diberikan karena tidak ada deskripsi tambahan.';
+
+            const selectedCtaValue = ctaOption.value;
+            const ctaInstruction = selectedCtaValue === 'kuning'
+                ? 'Untuk bagian CTA, script HARUS menggunakan variasi ajakan "cek keranjang kuning" secara halus dan tidak memaksa.'
+                : 'Untuk bagian CTA, script HARUS menggunakan variasi ajakan "cek link di bio" secara halus dan tidak memaksa.';
+
+            const prompt = `
+                Anda adalah seorang sutradara dan penulis skrip ahli untuk konten video pendek afiliasi yang viral.
+                Berdasarkan gambar produk yang diunggah pengguna dan deskripsi tambahan ini: "${descriptionContext}", buatkan 5 ide konten lengkap.
+
+                **ATURAN UTAMA & KRUSIAL (WAJIB DIIKUTI):**
+                1.  **ANALISIS GAMBAR:** Analisis gambar produk yang diunggah secara mendalam untuk membuat deskripsi produk yang akurat untuk digunakan dalam prompt.
+                2.  **KARAKTER INDONESIA:** Karakter model yang dibuat WAJIB memiliki ciri fisik dan penampilan yang khas orang Indonesia (misalnya: 'Southeast Asian woman', 'Indonesian man').
+                3.  **DEFINISIKAN KARAKTER & SETTING:** Untuk setiap ide, pertama-tama ciptakan satu 'karakter_dan_setting'. Ini harus berisi deskripsi hyper-detail tentang fisik dan pakaian model, SERTA deskripsi latar belakang utama yang relevan dengan produk. Deskripsi ini harus konsisten untuk satu ide.
+                4.  **ALUR CERITA VISUAL (STORYBOARD):** 'Prompt Visual' dan 'Prompt Gerak' untuk Hook, Isi, dan CTA harus menjadi satu alur cerita yang berkesinambungan. Aksi di bagian Isi harus merupakan kelanjutan dari Hook, dan aksi di CTA harus merupakan kelanjutan dari Isi.
+                5.  **FOKUS PADA AKSI:** Kolom 'prompt_visual' TIDAK BOLEH mendeskripsikan ulang fisik/pakaian model atau produk. Kolom itu HANYA berisi arahan gaya, aksi model, dan angle kamera yang sesuai dengan naskah di baris yang sama.
+                6.  **HASHTAG VIRAL:** Untuk setiap ide, buatkan satu set 'hashtags' yang relevan dan berpotensi viral/FYP. Set ini harus mencakup hashtag untuk platform berikut: TikTok, Instagram Reels, Shopee Video. Hashtag harus dalam Bahasa Indonesia dan diawali dengan simbol #.
+                7.  **BAHASA INGGRIS:** Semua 'prompt_visual', 'prompt_gerak', dan deskripsi 'karakter_dan_setting' WAJIB dalam Bahasa Inggris.
+                8.  **LARANGAN KONTEN:** Deskripsi 'karakter_dan_setting' dan 'prompt_visual' dilarang keras menyertakan atau menampilkan model sedang memegang/mengkonsumsi makanan atau minuman apapun. Model harus selalu tampil bersih tanpa properti makanan/minuman.
+                
+                PENTING: Anda HARUS memisahkan naskah voice over dari detail visual.
+                
+                Format output harus JSON.
+            `;
+            
+            const payload = {
+              contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }] }],
+              generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                  type: "OBJECT",
+                  properties: {
+                    "ide_konten": {
+                      type: "ARRAY",
+                      items: {
+                        type: "OBJECT",
+                        properties: {
+                          "id": { "type": "NUMBER" },
+                          "karakter_dan_setting": { "type": "STRING" },
+                          "naskah_voice_over": {
+                            type: "OBJECT",
+                            properties: {
+                                "hook": { "type": "STRING" },
+                                "isi": { "type": "STRING" },
+                                "cta": { "type": "STRING" },
+                            },
+                            required: ["hook", "isi", "cta"]
+                          },
+                          "visuals": {
+                            type: "OBJECT",
+                            properties: {
+                                "hook": { "type": "OBJECT", properties: {"prompt_visual": {"type": "STRING"}, "prompt_gerak": {"type": "STRING"}}, required: ["prompt_visual", "prompt_gerak"] },
+                                "isi": { "type": "OBJECT", properties: {"prompt_visual": {"type": "STRING"}, "prompt_gerak": {"type": "STRING"}}, required: ["prompt_visual", "prompt_gerak"] },
+                                "cta": { "type": "OBJECT", properties: {"prompt_visual": {"type": "STRING"}, "prompt_gerak": {"type": "STRING"}}, required: ["prompt_visual", "prompt_gerak"] }
+                            },
+                            required: ["hook", "isi", "cta"]
+                          },
+                          "backsound": {
+                            type: "OBJECT",
+                            properties: { "title": { "type": "STRING" }, "style": { "type": "STRING" } },
+                            required: ["title", "style"]
+                          },
+                          "hashtags": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "tiktok": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "instagram": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "shopee": { "type": "ARRAY", "items": { "type": "STRING" } }
+                            },
+                            "required": ["tiktok", "instagram", "shopee"]
+                          }
+                        },
+                        required: ["id", "karakter_dan_setting", "naskah_voice_over", "visuals", "backsound", "hashtags"]
+                      }
+                    }
+                  }
+                }
+              }
+            };
+            
+            try {
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(`API Error: ${response.status} ${response.statusText}. Detail: ${JSON.stringify(errorBody)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    const parsedData = JSON.parse(jsonString);
+                    lastGeneratedIdeas = parsedData.ide_konten;
+                    displayResults(lastGeneratedIdeas);
+                } else {
+                    throw new Error("Struktur respons dari API tidak valid atau kosong.");
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                showError("Terjadi kesalahan saat membuat ide. Coba lagi nanti.");
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        function displayResults(ideas) {
+            if (!ideas || ideas.length === 0) {
+                showError("Tidak ada ide yang bisa dihasilkan. Coba dengan prompt lain.");
+                return;
+            }
+            resultsTableBody.innerHTML = '';
+            scriptContent.innerHTML = '';
+
+            ideas.forEach((idea, index) => {
+                // Populate Script Section
+                const scriptHtml = `
+                    <div class="p-4 rounded-lg bg-gray-700/50">
+                        <h4 class="font-bold text-white">IDE #${idea.id}</h4>
+                        <div class="mt-2 text-sm space-y-1">
+                            <p><strong class="text-sky-400">Hook:</strong> ${idea.naskah_voice_over.hook}</p>
+                            <p><strong class="text-emerald-400">Isi:</strong> ${idea.naskah_voice_over.isi}</p>
+                            <p><strong class="text-amber-400">CTA:</strong> ${idea.naskah_voice_over.cta}</p>
+                        </div>
+                    </div>
+                `;
+                scriptContent.insertAdjacentHTML('beforeend', scriptHtml);
+
+                // Populate Visuals Table
+                const ideaParts = [
+                    { name: 'Hook', details: idea.visuals.hook, badgeColor: 'bg-sky-500/20 text-sky-300' },
+                    { name: 'Isi', details: idea.visuals.isi, badgeColor: 'bg-emerald-500/20 text-emerald-300' },
+                    { name: 'CTA', details: idea.visuals.cta, badgeColor: 'bg-amber-500/20 text-amber-300' }
+                ];
+                
+                const modelCellContent = `<p class="font-mono text-xs text-yellow-300">${idea.karakter_dan_setting}</p>`;
+
+                ideaParts.forEach((part, partIndex) => {
+                    const row = document.createElement('tr');
+                    
+                    if (partIndex === 0 && index > 0) {
+                        row.classList.add('border-t-4', 'border-gray-600');
+                    }
+
+                    const visualCellContent = `<p class="font-mono text-xs text-cyan-300">${part.details.prompt_visual}</p>`;
+
+                    let firstColumns = '';
+                    if (partIndex === 0) {
+                        const backsoundContent = `
+                            <div class="font-semibold text-gray-200">${idea.backsound.title}</div>
+                            <div class="text-xs text-gray-400 mt-1 mb-2">${idea.backsound.style}</div>
+                            <a href="https://suno.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 text-xs font-medium inline-flex items-center">
+                                Buat di Suno AI
+                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                        `;
+                        
+                        const hashtagContent = `
+                            <div class="space-y-2">
+                                <div>
+                                    <h4 class="text-xs font-semibold text-gray-400">TikTok:</h4>
+                                    <p class="font-mono text-xs text-green-400">${idea.hashtags.tiktok.join(' ')}</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-semibold text-gray-400">Instagram:</h4>
+                                    <p class="font-mono text-xs text-green-400">${idea.hashtags.instagram.join(' ')}</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-semibold text-gray-400">Shopee Video:</h4>
+                                    <p class="font-mono text-xs text-green-400">${idea.hashtags.shopee.join(' ')}</p>
+                                </div>
+                            </div>
+                        `;
+                    
+                        firstColumns = `
+                            <td class="px-4 py-4 align-top font-medium text-gray-200" rowspan="3">${idea.id}</td>
+                            <td class="px-4 py-4 align-top" rowspan="3">${modelCellContent}</td>
+                            <td class="px-4 py-4 align-top">
+                                <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${part.badgeColor}">${part.name}</span>
+                            </td>
+                        `;
+                        const backsoundCell = `<td class="px-4 py-4 align-top" rowspan="3">${backsoundContent}</td>`;
+                        const hashtagCell = `<td class="px-4 py-4 align-top" rowspan="3">${hashtagContent}</td>`;
+
+                        row.innerHTML = `
+                            ${firstColumns}
+                            <td class="px-4 py-4 align-top">${visualCellContent}</td>
+                            <td class="px-4 py-4 align-top font-mono text-xs text-purple-300">${part.details.prompt_gerak}</td>
+                            ${backsoundCell}
+                            ${hashtagCell}
+                        `;
+                    } else {
+                         row.innerHTML = `
+                            <td class="px-4 py-4 align-top">
+                                <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${part.badgeColor}">${part.name}</span>
+                            </td>
+                            <td class="px-4 py-4 align-top">${visualCellContent}</td>
+                            <td class="px-4 py-4 align-top font-mono text-xs text-purple-300">${part.details.prompt_gerak}</td>
+                        `;
+                    }
+                    resultsTableBody.appendChild(row);
+                });
+            });
+
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function setLoading(isLoading) {
+            generateButton.disabled = isLoading;
+            if (isLoading) {
+                buttonText.classList.add('hidden');
+                buttonIcon.classList.add('hidden');
+                loader.classList.remove('hidden');
+            } else {
+                buttonText.classList.remove('hidden');
+                buttonIcon.classList.remove('hidden');
+                loader.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+        }
+
+        function clearError() {
+            errorMessage.textContent = '';
+        }
+        
+        // --- Copy to Clipboard Logic ---
+        copyButton.addEventListener('click', () => {
+            if (lastGeneratedIdeas.length === 0) return;
+
+            let textToCopy = "HASIL IDE KONTEN AFILIASI\n";
+            textToCopy += "=============================\n\n";
+
+            lastGeneratedIdeas.forEach(idea => {
+                textToCopy += `--- IDE KONTEN #${idea.id} ---\n\n`;
+                
+                textToCopy += `[NASKAH VOICE OVER]\n`;
+                textToCopy += `Hook: ${idea.naskah_voice_over.hook}\n`;
+                textToCopy += `Isi: ${idea.naskah_voice_over.isi}\n`;
+                textToCopy += `CTA: ${idea.naskah_voice_over.cta}\n\n`;
+
+                textToCopy += `[PANDUAN VISUAL & PRODUKSI]\n`;
+                textToCopy += `Karakter & Setting: ${idea.karakter_dan_setting}\n`;
+                textToCopy += `Backsound: ${idea.backsound.title} (${idea.backsound.style})\n`;
+                textToCopy += `Hashtag TikTok: ${idea.hashtags.tiktok.join(' ')}\n`;
+                textToCopy += `Hashtag Instagram: ${idea.hashtags.instagram.join(' ')}\n`;
+                textToCopy += `Hashtag Shopee: ${idea.hashtags.shopee.join(' ')}\n\n`;
+
+                textToCopy += `[PROMPT VISUAL - HOOK]\n${idea.visuals.hook.prompt_visual}\nGerak: ${idea.visuals.hook.prompt_gerak}\n\n`;
+                textToCopy += `[PROMPT VISUAL - ISI]\n${idea.visuals.isi.prompt_visual}\nGerak: ${idea.visuals.isi.prompt_gerak}\n\n`;
+                textToCopy += `[PROMPT VISUAL - CTA]\n${idea.visuals.cta.prompt_visual}\nGerak: ${idea.visuals.cta.prompt_gerak}\n\n`;
+                
+                textToCopy += "=============================\n\n";
+            });
+            
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            copyNotification.classList.remove('opacity-0');
+            setTimeout(() => {
+                copyNotification.classList.add('opacity-0');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
