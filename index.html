@@ -110,6 +110,13 @@
             <div class="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                 <div class="text-white font-bold text-lg">Generator Konten</div>
                 <div class="flex items-center space-x-4">
+                    <button id="settings-button" class="bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.438 1.001v.192c0 .387.145.76.438 1.001l1.003.827c.424.35.534.954.26 1.431l-1.296 2.247a1.125 1.125 0 01-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 01-.22.127c-.332.183-.582.495-.645.87l-.213 1.281c-.09.543-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.296-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.437-1.001v-.192c0-.387-.145-.76-.437-1.001l-1.004-.827a1.125 1.125 0 01-.26-1.431l1.296-2.247a1.125 1.125 0 011.37-.49l1.217.456c.355.133.75.072 1.075-.124.073-.044.146-.087.22-.127.332-.183.582-.495.645-.87l.213-1.281z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Pengaturan
+                    </button>
                     <button id="help-button" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
                         <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -124,6 +131,11 @@
         </header>
 
         <div class="container mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+            <div id="api-key-notice" class="hidden max-w-4xl mx-auto mb-6 bg-yellow-900/50 border border-yellow-700 text-yellow-300 px-4 py-3 rounded-lg" role="alert">
+              <strong class="font-bold">Perhatian!</strong>
+              <span class="block sm:inline">Anda belum memasukkan API Key. Silakan masukkan di menu Pengaturan untuk mulai menggunakan aplikasi.</span>
+            </div>
+
             <main class="bg-gray-800 shadow-2xl rounded-2xl p-6 md:p-10 max-w-4xl mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <!-- Input Section -->
@@ -228,45 +240,56 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-4 overflow-y-auto modal-content text-gray-300">
+            <div class="p-6 space-y-6 overflow-y-auto modal-content text-gray-300">
                 <div>
-                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 1: Login</h4>
-                    <p>Gunakan email dan password yang telah didaftarkan oleh admin untuk masuk ke aplikasi. Anda hanya perlu login sekali, selanjutnya aplikasi akan mengingat sesi Anda.</p>
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Bagian 1: Cara Mendapatkan API Key</h4>
+                    <p class="mb-2">Aplikasi ini membutuhkan API Key dari Google AI Studio agar bisa berfungsi. Anda bisa mendapatkannya secara gratis. Ikuti langkah ini:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-sm">
+                        <li>Buka situs <a href="https://aistudio.google.com/" target="_blank" class="text-blue-400 hover:underline">Google AI Studio</a>.</li>
+                        <li>Login dengan akun Google Anda.</li>
+                        <li>Setelah masuk, cari dan klik tombol **"Get API key"** (biasanya ada di menu sebelah kiri atau atas).</li>
+                        <li>Klik **"Create API key in new project"**.</li>
+                        <li>Sebuah kunci (serangkaian huruf dan angka panjang) akan muncul. **Salin (copy)** kunci tersebut.</li>
+                        <li>Kembali ke aplikasi ini, buka **Pengaturan**, dan tempel kunci tersebut di kolom yang tersedia, lalu klik **Simpan**.</li>
+                    </ol>
                 </div>
-                <div>
-                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 2: Input Ide Anda</h4>
-                    <ul class="list-disc list-inside space-y-2">
-                        <li><strong>Unggah Gambar Produk:</strong> Ini adalah langkah paling penting. Klik pada kotak dan pilih satu gambar produk terbaik Anda. AI akan "melihat" gambar ini untuk memahami produknya.</li>
-                        <li><strong>Deskripsi Tambahan (Opsional):</strong> Tulis beberapa kata kunci atau keunggulan produk yang tidak terlihat di gambar. Contoh: "untuk kulit sensitif", "tahan air", atau "target audiens: pria usia 20-30 tahun".</li>
-                        <li><strong>Pilih Gaya CTA:</strong> Tentukan ajakan bertindak yang Anda inginkan, apakah "Keranjang Kuning" untuk TikTok/Shopee, atau "Link di Bio" untuk Instagram.</li>
+                <div class="border-t border-gray-700 pt-6">
+                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Bagian 2: Cara Menggunakan Aplikasi</h4>
+                     <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Langkah 1: Login & Pengaturan API Key:</strong> Masuk dengan akun Anda. Jika ini pertama kalinya, buka menu **Pengaturan** dan masukkan API Key yang sudah Anda dapatkan dari Google AI Studio.</li>
+                        <li><strong>Langkah 2: Input Ide Anda:</strong> Unggah gambar produk terbaik Anda, berikan deskripsi tambahan jika perlu, dan pilih gaya CTA yang diinginkan.</li>
+                        <li><strong>Langkah 3: Buat Script:</strong> Klik tombol **"Buatkan Script"** untuk membiarkan AI bekerja.</li>
+                        <li><strong>Langkah 4: Pahami Hasil:</strong> Anda akan mendapatkan dua bagian: **Naskah Voice Over** yang bersih dan **Tabel Panduan Visual** yang berisi semua detail teknis (deskripsi model, prompt, hashtag, dll).</li>
+                        <li><strong>Langkah 5: Eksekusi:</strong> Gunakan tombol **"Salin Hasil"** untuk menyalin semua informasi. Gunakan naskah untuk voice over dan prompt visual untuk membuat gambar/video di platform AI favorit Anda.</li>
                     </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 3: Buat Script!</h4>
-                    <p>Setelah gambar terunggah, klik tombol **"Buatkan Script"**. AI akan mulai bekerja merancang beberapa ide konten lengkap untuk Anda.</p>
-                </div>
-                 <div>
-                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 4: Memahami Hasil</h4>
-                    <p>Hasilnya akan dibagi menjadi dua bagian utama:</p>
-                    <div class="mt-2 pl-4 border-l-2 border-gray-600 space-y-3">
-                        <p><strong>1. Naskah Voice Over:</strong> Bagian ini berisi teks bersih yang siap Anda bacakan atau gunakan di aplikasi text-to-speech. Isinya hanya dialog, tanpa arahan visual.</p>
-                        <p><strong>2. Panduan Visual & Produksi:</strong> Ini adalah tabel contekan untuk sutradara. Isinya:</p>
-                        <ul class="list-decimal list-inside space-y-1 text-sm">
-                            <li><strong>Karakter & Setting:</strong> Deskripsi detail model (aktor) dan lokasi syuting.</li>
-                            <li><strong>Struktur:</strong> Menandai adegan Hook, Isi, atau CTA.</li>
-                            <li><strong>Prompt Visual:</strong> Arahan aksi dan gaya untuk setiap adegan. Ini adalah perintah untuk AI Image Generator.</li>
-                            <li><strong>Prompt Gerak:</strong> Arahan gerakan kamera untuk AI Video Generator.</li>
-                            <li><strong>Backsound & Hashtag:</strong> Rekomendasi musik dan hashtag yang siap pakai.</li>
-                        </ul>
-                    </div>
-                </div>
-                 <div>
-                    <h4 class="font-semibold text-lg text-indigo-400 mb-2">Langkah 5: Eksekusi</h4>
-                     <p>Gunakan tombol **"Salin Hasil"** untuk menyalin semua informasi ke clipboard. Tempel (paste) di catatan atau dokumen Anda. Gunakan prompt yang ada di tabel untuk membuat aset visual Anda di platform AI favorit (seperti Midjourney, Leonardo, dll).</p>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full flex flex-col">
+             <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-white">Pengaturan</h3>
+                <button id="close-settings-button" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="api-key-input" class="block mb-2 text-sm font-medium text-gray-300">Google AI Studio API Key</label>
+                    <input id="api-key-input" type="password" class="block p-2.5 w-full text-sm text-gray-200 bg-gray-700 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan API Key Anda di sini">
+                </div>
+                <div class="flex space-x-4">
+                    <button id="save-api-key-button" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">Simpan</button>
+                    <button id="delete-api-key-button" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none">Hapus</button>
+                </div>
+                <p id="settings-status" class="text-center text-sm pt-2"></p>
+            </div>
+        </div>
+    </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -301,6 +324,14 @@
         const helpButton = document.getElementById('help-button');
         const helpModal = document.getElementById('help-modal');
         const closeHelpButton = document.getElementById('close-help-button');
+        const settingsButton = document.getElementById('settings-button');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettingsButton = document.getElementById('close-settings-button');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyButton = document.getElementById('save-api-key-button');
+        const deleteApiKeyButton = document.getElementById('delete-api-key-button');
+        const settingsStatus = document.getElementById('settings-status');
+        const apiKeyNotice = document.getElementById('api-key-notice');
         const fileUpload = document.getElementById('file-upload');
         const fileDropZone = document.getElementById('file-drop-zone');
         const uploadPrompt = document.getElementById('upload-prompt');
@@ -327,6 +358,7 @@
             if (user) {
                 loginContainer.style.display = 'none';
                 appContainer.style.display = 'block';
+                checkApiKey(); // Check for API key after login
             } else {
                 loginContainer.style.display = 'flex';
                 appContainer.style.display = 'none';
@@ -352,22 +384,64 @@
             signOut(auth);
         });
         
-        // --- Help Modal Logic ---
-        helpButton.addEventListener('click', () => {
-            helpModal.classList.remove('hidden');
-            helpModal.classList.add('flex');
-        });
+        // --- Modal Logic ---
+        function setupModal(button, modal, closeButton) {
+            button.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+            closeButton.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        }
+        setupModal(helpButton, helpModal, closeHelpButton);
+        setupModal(settingsButton, settingsModal, closeSettingsButton);
 
-        closeHelpButton.addEventListener('click', () => {
-            helpModal.classList.add('hidden');
-            helpModal.classList.remove('flex');
-        });
-
-        helpModal.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.classList.add('hidden');
-                helpModal.classList.remove('flex');
+        // --- API Key Settings Logic ---
+        function checkApiKey() {
+            const apiKey = localStorage.getItem('googleAiApiKey');
+            if (!apiKey) {
+                apiKeyNotice.classList.remove('hidden');
+            } else {
+                apiKeyNotice.classList.add('hidden');
             }
+            return apiKey;
+        }
+
+        saveApiKeyButton.addEventListener('click', () => {
+            const apiKey = apiKeyInput.value.trim();
+            if (apiKey) {
+                localStorage.setItem('googleAiApiKey', apiKey);
+                settingsStatus.textContent = 'API Key berhasil disimpan!';
+                settingsStatus.className = 'text-center text-sm pt-2 text-green-400';
+                apiKeyInput.value = '';
+                checkApiKey();
+                setTimeout(() => {
+                    settingsModal.classList.add('hidden');
+                    settingsModal.classList.remove('flex');
+                    settingsStatus.textContent = '';
+                }, 1500);
+            } else {
+                settingsStatus.textContent = 'Kolom tidak boleh kosong.';
+                settingsStatus.className = 'text-center text-sm pt-2 text-red-400';
+            }
+        });
+
+        deleteApiKeyButton.addEventListener('click', () => {
+            localStorage.removeItem('googleAiApiKey');
+            settingsStatus.textContent = 'API Key berhasil dihapus.';
+            settingsStatus.className = 'text-center text-sm pt-2 text-yellow-400';
+            checkApiKey();
+             setTimeout(() => {
+                settingsStatus.textContent = '';
+            }, 2000);
         });
 
 
@@ -409,6 +483,11 @@
         generateButton.addEventListener('click', generateContentIdeas);
 
         async function generateContentIdeas() {
+            const apiKey = checkApiKey();
+            if (!apiKey) {
+                showError("API Key tidak ditemukan. Silakan masukkan di menu Pengaturan.");
+                return;
+            }
             if (!base64ImageData) {
                 showError("Silakan unggah gambar produk terlebih dahulu.");
                 return;
@@ -505,7 +584,6 @@
             };
             
             try {
-                const apiKey = ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
