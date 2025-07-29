@@ -109,7 +109,13 @@
         <header class="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20">
             <div class="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                 <div class="text-white font-bold text-lg">Generator Konten</div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <button id="reset-button" class="bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-11.664 0l3.181-3.183a8.25 8.25 0 00-11.664 0l-3.181 3.183" />
+                        </svg>
+                        Reset
+                    </button>
                     <button id="settings-button" class="bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center">
                         <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.438 1.001v.192c0 .387.145.76.438 1.001l1.003.827c.424.35.534.954.26 1.431l-1.296 2.247a1.125 1.125 0 01-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 01-.22.127c-.332.183-.582.495-.645.87l-.213 1.281c-.09.543-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.296-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.437-1.001v-.192c0-.387-.145-.76-.437-1.001l-1.004-.827a1.125 1.125 0 01-.26-1.431l1.296-2.247a1.125 1.125 0 011.37-.49l1.217.456c.355.133.75.072 1.075-.124.073-.044.146-.087.22-.127.332-.183.582-.495.645-.87l.213-1.281z" />
@@ -282,7 +288,7 @@
                     <input id="api-key-input" type="password" class="block p-2.5 w-full text-sm text-gray-200 bg-gray-700 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan API Key Anda di sini">
                 </div>
                 <div class="flex space-x-4">
-                    <button id="save-api-key-button" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">Simpan</button>
+                    <button id="save-api-key-button" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">Simpan & Validasi</button>
                     <button id="delete-api-key-button" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none">Hapus</button>
                 </div>
                 <p id="settings-status" class="text-center text-sm pt-2"></p>
@@ -321,6 +327,7 @@
         const loginErrorMsg = document.getElementById('login-error');
         const appContainer = document.getElementById('app-container');
         const logoutButton = document.getElementById('logout-button');
+        const resetButton = document.getElementById('reset-button'); // Added Reset Button
         const helpButton = document.getElementById('help-button');
         const helpModal = document.getElementById('help-modal');
         const closeHelpButton = document.getElementById('close-help-button');
@@ -352,13 +359,33 @@
         let lastGeneratedIdeas = []; 
         let base64ImageData = null;
 
+        // --- App State Reset Function ---
+        function resetDashboard() {
+            // Clear results
+            resultsSection.classList.add('hidden');
+            scriptContent.innerHTML = '';
+            resultsTableBody.innerHTML = '';
+            lastGeneratedIdeas = [];
+            
+            // Reset inputs
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '#';
+            uploadPrompt.classList.remove('hidden');
+            fileUpload.value = '';
+            base64ImageData = null;
+            productDescription.value = '';
+            generateButton.disabled = true;
+            errorMessage.textContent = '';
+        }
+
         // --- Authentication Logic ---
         onAuthStateChanged(auth, user => {
             authLoader.style.display = 'none';
             if (user) {
                 loginContainer.style.display = 'none';
                 appContainer.style.display = 'block';
-                checkApiKey(); // Check for API key after login
+                checkApiKey();
+                resetDashboard(); // Reset dashboard on login
             } else {
                 loginContainer.style.display = 'flex';
                 appContainer.style.display = 'none';
@@ -382,7 +409,10 @@
 
         logoutButton.addEventListener('click', () => {
             signOut(auth);
+            resetDashboard(); // Reset dashboard on logout
         });
+
+        resetButton.addEventListener('click', resetDashboard); // Connect reset button to function
         
         // --- Modal Logic ---
         function setupModal(button, modal, closeButton) {
@@ -415,11 +445,32 @@
             return apiKey;
         }
 
-        saveApiKeyButton.addEventListener('click', () => {
+        async function validateApiKey(key) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`;
+            try {
+                const response = await fetch(apiUrl);
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        saveApiKeyButton.addEventListener('click', async () => {
             const apiKey = apiKeyInput.value.trim();
-            if (apiKey) {
+            if (!apiKey) {
+                settingsStatus.textContent = 'Kolom tidak boleh kosong.';
+                settingsStatus.className = 'text-center text-sm pt-2 text-red-400';
+                return;
+            }
+
+            settingsStatus.textContent = 'Memvalidasi kunci...';
+            settingsStatus.className = 'text-center text-sm pt-2 text-yellow-400';
+
+            const isValid = await validateApiKey(apiKey);
+
+            if (isValid) {
                 localStorage.setItem('googleAiApiKey', apiKey);
-                settingsStatus.textContent = 'API Key berhasil disimpan!';
+                settingsStatus.textContent = 'API Key valid dan berhasil disimpan!';
                 settingsStatus.className = 'text-center text-sm pt-2 text-green-400';
                 apiKeyInput.value = '';
                 checkApiKey();
@@ -429,7 +480,7 @@
                     settingsStatus.textContent = '';
                 }, 1500);
             } else {
-                settingsStatus.textContent = 'Kolom tidak boleh kosong.';
+                settingsStatus.textContent = 'API Key tidak valid. Periksa kembali.';
                 settingsStatus.className = 'text-center text-sm pt-2 text-red-400';
             }
         });
